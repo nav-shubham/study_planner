@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CA Final Study Planner | FR · AFM · DT · IDT · Audit</title>
+  <meta name="description" content="Smart study planner for CA Final – FR, AFM, DT, IDT, Audit. Track progress, revisions and ace your exams." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">⚖️</div>
+        <div class="logo-text">
+          <span class="logo-title">CA Final</span>
+          <span class="logo-sub">Study Planner</span>
+        </div>
+      </div>
+      <button class="sidebar-close" id="sidebarClose">✕</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" data-view="dashboard"><span class="nav-icon">🏠</span><span>Dashboard</span></a>
+      <a href="#" class="nav-item" data-view="planner"><span class="nav-icon">📅</span><span>Study Planner</span></a>
+      <a href="#" class="nav-item" data-view="topics"><span class="nav-icon">📋</span><span>Topic Tracker</span></a>
+      <a href="#" class="nav-item" data-view="timer"><span class="nav-icon">⏱️</span><span>Focus Timer</span></a>
+      <a href="#" class="nav-item" data-view="revision"><span class="nav-icon">🔁</span><span>Revision Log</span></a>
+      <a href="#" class="nav-item" data-view="analytics"><span class="nav-icon">📊</span><span>Analytics</span></a>
+    </nav>
+    <div class="sidebar-subjects">
+      <div class="sidebar-label">SUBJECTS</div>
+      <div class="subject-pill fr">FR</div>
+      <div class="subject-pill afm">AFM</div>
+      <div class="subject-pill dt">DT</div>
+      <div class="subject-pill idt">IDT</div>
+      <div class="subject-pill audit">Audit</div>
+    </div>
+    <div class="sidebar-exam-date">
+      <div class="sidebar-label">EXAM COUNTDOWN</div>
+      <div class="exam-date-picker">
+        <label>Target Exam Date</label>
+        <input type="date" id="examDateInput" />
+      </div>
+      <div class="countdown-display">
+        <div class="countdown-number" id="daysLeft">--</div>
+        <div class="countdown-label">days to go</div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div class="main-wrapper">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn">☰</button>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <div class="date-display" id="todayDate"></div>
+        <button class="btn-primary" id="addSessionBtn">+ Log Session</button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- DASHBOARD -->
+      <section class="view active" id="view-dashboard">
+        <div class="greeting" id="greeting"></div>
+        <div class="stats-row">
+          <div class="stat-card" style="--accent:#6c63ff">
+            <div class="stat-icon">📚</div>
+            <div class="stat-info">
+              <div class="stat-value" id="totalHours">0h</div>
+              <div class="stat-label">Total Study Hours</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--accent:#22d3ee">
+            <div class="stat-icon">✅</div>
+            <div class="stat-info">
+              <div class="stat-value" id="topicsCompleted">0%</div>
+              <div class="stat-label">Topics Completed</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--accent:#f59e0b">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-info">
+              <div class="stat-value" id="streakCount">0</div>
+              <div class="stat-label">Day Streak</div>
+            </div>
+          </div>
+          <div class="stat-card" style="--accent:#10b981">
+            <div class="stat-icon">📝</div>
+            <div class="stat-info">
+              <div class="stat-value" id="sessionsToday">0</div>
+              <div class="stat-label">Sessions Today</div>
+            </div>
+          </div>
+        </div>
+        <div class="section-header">
+          <h2>Subject Progress</h2>
+          <span class="section-hint">Click a subject to view topics</span>
+        </div>
+        <div class="subject-cards" id="subjectCards"></div>
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <h3>📅 Recent Sessions</h3>
+              <button class="btn-sm" onclick="switchView('planner')">View All</button>
+            </div>
+            <div id="recentSessions"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>🔁 Recent Revisions</h3>
+              <button class="btn-sm" onclick="switchView('revision')">View All</button>
+            </div>
+            <div id="recentRevisions"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PLANNER -->
+      <section class="view" id="view-planner">
+        <div class="section-header">
+          <h2>📅 Weekly Study Planner</h2>
+          <div class="planner-actions">
+            <button class="btn-sm" id="prevWeek">← Prev</button>
+            <span class="week-label" id="weekLabel"></span>
+            <button class="btn-sm" id="nextWeek">Next →</button>
+          </div>
+        </div>
+        <div class="planner-grid" id="plannerGrid"></div>
+        <div class="section-header mt-2">
+          <h2>➕ Add Study Session</h2>
+        </div>
+        <div class="card add-session-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Subject</label>
+              <select id="sessionSubject">
+                <option value="FR">FR – Financial Reporting</option>
+                <option value="AFM">AFM – Adv. Financial Mgmt</option>
+                <option value="DT">DT – Direct Tax</option>
+                <option value="IDT">IDT – Indirect Tax</option>
+                <option value="Audit">Audit</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="sessionDate" />
+            </div>
+            <div class="form-group">
+              <label>Duration (hrs)</label>
+              <input type="number" id="sessionDuration" min="0.5" max="12" step="0.5" value="2" />
+            </div>
+            <div class="form-group">
+              <label>Type</label>
+              <select id="sessionType">
+                <option value="Study">📖 Study</option>
+                <option value="Revision">🔁 Revision</option>
+                <option value="Practice">✏️ Practice</option>
+                <option value="Mock">📝 Mock Test</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex:1">
+              <label>Topic / Notes</label>
+              <input type="text" id="sessionTopic" placeholder="e.g., AS-10 Property, Plant & Equipment" />
+            </div>
+          </div>
+          <button class="btn-primary" id="addSessionSubmit">Add Session</button>
+        </div>
+
+        <div class="section-header mt-2">
+          <h2>📋 All Sessions</h2>
+        </div>
+        <div id="allSessionsList"></div>
+      </section>
+
+      <!-- TOPICS -->
+      <section class="view" id="view-topics">
+        <div class="section-header">
+          <h2>📋 Topic Tracker</h2>
+          <div class="topic-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="FR">FR</button>
+            <button class="filter-btn" data-filter="AFM">AFM</button>
+            <button class="filter-btn" data-filter="DT">DT</button>
+            <button class="filter-btn" data-filter="IDT">IDT</button>
+            <button class="filter-btn" data-filter="Audit">Audit</button>
+          </div>
+        </div>
+        <div id="topicsList"></div>
+      </section>
+
+      <!-- TIMER -->
+      <section class="view" id="view-timer">
+        <div class="section-header"><h2>⏱️ Focus Timer</h2></div>
+        <div class="timer-container">
+          <div class="timer-mode-btns">
+            <button class="mode-btn active" data-mode="pomodoro">🍅 Pomodoro (25m)</button>
+            <button class="mode-btn" data-mode="short">☕ Short Break (5m)</button>
+            <button class="mode-btn" data-mode="long">🌿 Long Break (15m)</button>
+            <button class="mode-btn" data-mode="custom">⚙️ Custom</button>
+          </div>
+          <div class="custom-time-input" id="customTimeInput" style="display:none">
+            <input type="number" id="customMinutes" placeholder="Minutes" min="1" max="180" value="60" />
+            <button class="btn-sm" id="setCustomTime">Set</button>
+          </div>
+          <div class="timer-subject-select">
+            <label>Currently Studying:</label>
+            <select id="timerSubject">
+              <option value="FR">FR – Financial Reporting</option>
+              <option value="AFM">AFM – Adv. Financial Mgmt</option>
+              <option value="DT">DT – Direct Tax</option>
+              <option value="IDT">IDT – Indirect Tax</option>
+              <option value="Audit">Audit</option>
+            </select>
+          </div>
+          <div class="timer-ring-wrapper">
+            <svg class="timer-ring" viewBox="0 0 220 220">
+              <circle class="ring-bg" cx="110" cy="110" r="96" />
+              <circle class="ring-progress" id="ringProgress" cx="110" cy="110" r="96" />
+            </svg>
+            <div class="timer-display">
+              <div class="timer-time" id="timerDisplay">25:00</div>
+              <div class="timer-session-label" id="timerSessionLabel">Focus Session</div>
+            </div>
+          </div>
+          <div class="timer-controls">
+            <button class="timer-btn" id="timerStart">▶ Start</button>
+            <button class="timer-btn secondary" id="timerReset">↺ Reset</button>
+          </div>
+          <div class="timer-stats-row">
+            <div class="timer-stat">
+              <div class="ts-val" id="pomodorosToday">0</div>
+              <div class="ts-lab">Pomodoros Today</div>
+            </div>
+            <div class="timer-stat">
+              <div class="ts-val" id="focusTimeToday">0h 0m</div>
+              <div class="ts-lab">Focus Time Today</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- REVISION -->
+      <section class="view" id="view-revision">
+        <div class="section-header">
+          <h2>🔁 Revision Log</h2>
+          <button class="btn-primary" id="addRevisionBtn">+ Add Revision</button>
+        </div>
+        <div class="card" id="addRevisionForm" style="display:none">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Subject</label>
+              <select id="revSubject">
+                <option value="FR">FR</option>
+                <option value="AFM">AFM</option>
+                <option value="DT">DT</option>
+                <option value="IDT">IDT</option>
+                <option value="Audit">Audit</option>
+              </select>
+            </div>
+            <div class="form-group" style="flex:2">
+              <label>Topic</label>
+              <input type="text" id="revTopic" placeholder="Topic you revised..." />
+            </div>
+            <div class="form-group">
+              <label>Confidence</label>
+              <select id="revConfidence">
+                <option value="low">🔴 Low</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="high">🟢 High</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" style="flex:2">
+              <label>Notes / Weak Areas</label>
+              <input type="text" id="revNotes" placeholder="Any notes or weak points to revisit..." />
+            </div>
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" id="revDate" />
+            </div>
+          </div>
+          <button class="btn-primary" id="saveRevision">Save Revision</button>
+        </div>
+        <div id="revisionList"></div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="view" id="view-analytics">
+        <div class="section-header"><h2>📊 Analytics</h2></div>
+        <div class="analytics-grid">
+          <div class="card">
+            <h3>Hours by Subject</h3>
+            <div class="bar-chart" id="hoursChart"></div>
+          </div>
+          <div class="card">
+            <h3>Session Types</h3>
+            <div class="donut-chart-wrap">
+              <canvas id="donutCanvas" width="200" height="200"></canvas>
+              <div class="donut-legend" id="donutLegend"></div>
+            </div>
+          </div>
+          <div class="card full-width">
+            <h3>Daily Study Heatmap (Last 30 Days)</h3>
+            <div class="heatmap-wrap" id="heatmapWrap"></div>
+          </div>
+          <div class="card">
+            <h3>Topic Completion per Subject</h3>
+            <div id="completionRateChart"></div>
+          </div>
+          <div class="card">
+            <h3>⚠️ Topics Needing Revision</h3>
+            <div id="weakTopicsList"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Log Session Modal -->
+  <div class="modal-overlay" id="logSessionModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>⏱ Log Completed Session</h3>
+        <button class="modal-close" id="modalClose">✕</button>
+      </div>
+      <div class="form-group">
+        <label>Subject</label>
+        <select id="modalSubject">
+          <option value="FR">FR – Financial Reporting</option>
+          <option value="AFM">AFM – Adv. Financial Mgmt</option>
+          <option value="DT">DT – Direct Tax</option>
+          <option value="IDT">IDT – Indirect Tax</option>
+          <option value="Audit">Audit</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Topic</label>
+        <input type="text" id="modalTopic" placeholder="Topic covered..." />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Duration (hrs)</label>
+          <input type="number" id="modalDuration" min="0.5" max="12" step="0.5" value="1" />
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="modalDate" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Session Type</label>
+        <select id="modalType">
+          <option value="Study">📖 Study</option>
+          <option value="Revision">🔁 Revision</option>
+          <option value="Practice">✏️ Practice</option>
+          <option value="Mock">📝 Mock Test</option>
+        </select>
+      </div>
+      <button class="btn-primary full-btn" id="modalSave">Save Session</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
